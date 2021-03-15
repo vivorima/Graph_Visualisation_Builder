@@ -4,12 +4,22 @@ class Noeud implements Comparable
     public int v;
     float dis;
     ArrayList<Noeud> voisins;
+    float x,y;
     int pos; // the node position in the graph
     
     public Noeud(int v,int pos)
     {
       this.v = v;
       this.pos = pos;
+      this.voisins = new ArrayList();
+    }
+    
+    public Noeud(int v,int pos,float x,float y)
+    {
+      this.v = v;
+      this.pos = pos;
+      this.x = x;
+      this.y = y;
       this.voisins = new ArrayList();
     }
     
@@ -25,6 +35,7 @@ class Noeud implements Comparable
     // draw the node
       void show(int offset,int distance,int y,int diam){ 
         fill(150);
+        stroke(0,0,0);
         ellipse(offset+pos*distance, y,diam, diam);
         textSize(distance/3);
         fill(0, 102, 153);
