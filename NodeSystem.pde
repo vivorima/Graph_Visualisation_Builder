@@ -12,13 +12,6 @@ int nb_connections;
 
 }
 
-// run the nodesystem
-void run(){
- 
-  display();
-  noLoop();
-  
-}
 
 // calculate the connections and draw the lines
 void DrawConnections(Noeud n,int offset,int distance,int y,int diam){
@@ -42,12 +35,8 @@ void DrawConnections(Noeud n,int offset,int distance,int y,int diam){
 }
       
   // display the nodes and draw the connections
-void display(){
+void display(int offset,int distance,int diam){
 
-  
-        int offset = 40;
-        int distance =60;
-        int diam=15;
         
        Noeud n = null;// keep it clear
       for(int i = 0; i < nodes.size(); i++){

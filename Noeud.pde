@@ -37,9 +37,9 @@ class Noeud implements Comparable
         fill(150);
         stroke(0,0,0);
         ellipse(offset+pos*distance, y,diam, diam);
-        textSize(distance/3);
-        fill(0, 102, 153);
-        text("V"+v, offset+pos*distance-distance/6, y+diam*2); 
+        textSize(diam/2);
+        fill(0);
+        text("V"+v, offset+pos*distance, y+diam); 
       }
     
     
