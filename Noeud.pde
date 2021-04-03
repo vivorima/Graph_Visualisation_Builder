@@ -34,12 +34,12 @@ class Noeud implements Comparable
     
     // draw the node
       void show(int offset,int distance,int y,int diam){ 
-        fill(150);
+        fill(26, 0, 123);
         stroke(0,0,0);
         ellipse(offset+pos*distance, y,diam, diam);
-        textSize(diam/2);
-        fill(0);
-        text("V"+v, offset+pos*distance, y+diam); 
+        textSize(16);
+        fill(26, 0, 123);
+        text("v"+v, offset+pos*distance, y+1.5*diam); 
       }
     
     
@@ -51,13 +51,13 @@ class Noeud implements Comparable
     public String toString(){
       String s = "V"+str(v);
       
-      if(this.voisins!=null){
+     /* if(this.voisins!=null){
         s = s+": [";
         for (int i = 0; i <  this.voisins.size(); i++) {
           s = s + " V"+ str(this.voisins.get(i).v)+",";
         }
         s = s+"]-----" + str(dis);
-      }else s = s+": aucun voisin.";
+      }else s = s+": aucun voisin.";*/
       return s;
 }
   

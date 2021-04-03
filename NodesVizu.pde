@@ -1,8 +1,9 @@
 NodeSystem ns,ns_plus; // the graph of nodes
-int nb_node= 6;// number of nodes
+int nb_node= 0;// number of nodes
 
 
 Noeud rename=null;
+int space=145;
 int offset = 40;
 int distance =60;
 int diam=30;  
@@ -12,6 +13,7 @@ int  pressed = 0;
 Noeud n1,n2;
 
 //CREATION DES TABLEAUX
+ArrayList<ArrayList<Noeud> > generalList = new ArrayList<ArrayList<Noeud> >(10); //max 10 itérations
 ArrayList<Noeud> T = new ArrayList<Noeud>();
 ArrayList<Noeud> T_plus = new ArrayList<Noeud>();
 
@@ -21,14 +23,15 @@ void setup(){
       background(255,5);  // bg for startup
       size(800,800);
       
-       /* nb=7;
+       
        T.add(new Noeud(0,0));
         T.add(new Noeud(2,1));
         T.add(new Noeud(4,2));
         T.add(new Noeud(5,3));
         T.add(new Noeud(3,4));
         T.add(new Noeud(1,5));
-        T.add(new Noeud(6,6));
+        
+        nb=T.size();
         
         T.get(0).AddVoisin(T.get(5));
         T.get(0).AddVoisin(T.get(1));
@@ -36,10 +39,7 @@ void setup(){
         T.get(5).AddVoisin(T.get(4));
         T.get(1).AddVoisin(T.get(2));
         T.get(1).AddVoisin(T.get(3));
-      T.get(6).AddVoisin(T.get(3));
-      T.get(6).AddVoisin(T.get(1));
-      */
-        
+        T.get(1).AddVoisin(T.get(3));
         
 }// end of setup
 
@@ -65,14 +65,22 @@ Noeud getClosestNode(float x,float y){
 void update(){
           
   
+  nb_node=T.size();
+  //generalList.add(new ArrayList<Noeud>(T));
+  print("\n",T);
+  
+       
         int itr =0;
         //tant que T!=T'
         while(!T.equals(T_plus)  && itr<nb_node){
           
-          //si c'est pas le début T<-T', sinon on commence avec T initial
+          //si c'est pas le début alors T<-T'
           if(T_plus.size()!=0) {
+            //sauvegarde du T' dans T
             java.util.Collections.copy(T,T_plus);
+            //si c'est le début T est le tableau initial
           }
+          //init du T'
           T_plus = new ArrayList<Noeud>();
          
            
@@ -88,41 +96,29 @@ void update(){
           
           //trier T'   
           java.util.Collections.sort(T_plus);
+          print("\n",itr,T_plus);
            
-          
-          //Dessiner le graphe T
-          if(itr>4)
-          {
-            distance = distance/2;
-            offset = offset/2;
-          }
-          else{
-              
-            ns_plus = new NodeSystem(T_plus,(itr+1)*135);
-            textSize(18);
-            fill(0, 0, 0);
-            text("Itr:"+itr, offset/2 , (itr+1)*135); 
-            ns_plus.display(offset,distance,diam);
-          }
-          
+          //generalList.add(new ArrayList<Noeud>(T_plus));
           itr++;
 
       }
-  
+      
 }
 
+
+//TO RENAME THE ELEMENTS
 void keyPressed(){
   if(input && rename!=null){
 
       
     if (key == '0' ||key == '1' || key == '2' || key == '3' ||key == '4' ||key == '5' || key == '6' || key == '7' || key == '8' || key == '9')
     {
-        print(key);
+      
         rename.v=key-48;
-        textSize(12);
-        fill(255, 0, 200);
-        text("V"+rename.v, mouseX, mouseY+diam); 
-        print(rename);
+        textSize(16);
+        fill(0, 204, 106);
+        text("v"+rename.v, rename.x+diam/2, rename.y-diam/2); 
+        
         rename = null;
         erreur("");
     }
@@ -149,12 +145,11 @@ void mouseReleased() {
               T.add(n);
               nb++;
               //draw the node
-              fill(170, 93, 87);
+              fill(26, 0, 123);
               stroke(0,0,0);
               ellipse(mouseX, mouseY,diam, diam);
               textSize(16);
-              fill(24, 24, 73);
-              text(n.v, mouseX, mouseY-diam); 
+              text(n.v, mouseX-diam/2, mouseY-diam/2); 
               
               rename = null;
            }
@@ -178,7 +173,8 @@ void mouseReleased() {
             erreur("no node found at this location");
             //annuler le lien 
             pressed = 0;
-          }
+          }else 
+          erreur("waiting to complete link");
         }
         //attente du deuxieme node
         else if(pressed==2)  {
@@ -190,31 +186,31 @@ void mouseReleased() {
             //annuler le lien 
             pressed = 0;
           }else if(n1==n2){
-            erreur("link with same node, try again");
+            erreur("link with same node, try over");
             //annuler le lien 
             pressed = 0;
           }
           else
           {
+            
             //ajouter la relation de voisinage
              n1.AddVoisin(n2);
             //dessiner le lien
-            stroke(0);
+            stroke(150);
             line(n1.x, n1.y, n2.x, n2.y);
             //initialiser 
-            pressed = 0;  
+            pressed = 0; 
+            erreur("link completed");
           }
         }
         
         rename=null;
         
       }       
+      
 }
 
-void mouseWheel(MouseEvent event) {
-  float e = event.getCount();
-  println(e);
-}
+
 
 //afficher une erreur 
 void erreur(String msg){
@@ -226,117 +222,79 @@ void erreur(String msg){
             textAlign(CENTER);
             fill(255, 0, 1);
             text(msg,400,780); 
-            print("\n",msg);
 }
 
 
 void draw(){
      
-      if(input){
+      /*if(input){
         //button
-        fill(64, 64, 64);
+        fill(26, 0, 123);
         rect(250,700,300,50);
         //text button
         textSize(25);
         textAlign(CENTER);
-        fill(51, 255, 155);
+        fill(255);
         text("Meilleure Visualisation",400,735);
-      }else{ 
-        //to center them in the middle 
+      }else{ */
         
-        distance = 700/(nb);
-        offset = (800-distance*(nb-1))/2;
         update();
-      }
+        if(generalList.size()>5){
+          
+          diam=20;
+          
+          for(int itr=0;itr<generalList.size();itr++){
+            
+                T_plus= generalList.get(itr);
+                //Dessiner le graphe T
+                if(itr>4)
+                {
+                  
+                  offset = (800-(distance*(nb))); //second part
+                  ns_plus = new NodeSystem(T_plus,(itr-4)*space);
+                  textSize(18);
+                  fill(26, 0, 123);
+                  text("Itr "+itr, offset, (itr-4)*space-60); 
+                  ns_plus.display(offset,distance,diam);
+                }
+                else{
+                    
+                  distance = (700/(nb))/2;
+                  offset = (700-(distance*(nb-1))*2)/2; //first part
+                  
+                  ns_plus = new NodeSystem(T_plus,(itr+1)*space);
+                  textSize(18);
+                  fill(26, 0, 123);
+                  text("Itr "+itr, offset, (itr+1)*space-60); 
+                  ns_plus.display(offset,distance,diam);
+                }
+            
+          }
+          
+        }
+        else{
+          
+          
+        distance = (700/(nb));
+        offset = (800-distance*(nb-1))/2; //middle
+        for(int itr=0;itr<generalList.size();itr++)
+        {
+              T_plus= generalList.get(itr);
+              ns_plus = new NodeSystem(T_plus,(itr+1)*space);
+              textSize(18);
+              fill(26, 0, 123);
+              text("Itr "+itr, offset, (itr+1)*space-60); 
+              ns_plus.display(offset,distance,diam);
+        }
+        
+          
+          
+        }
+        
+        noLoop();
+          
+        
+ //     }
 
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-V0: 2
-V2: 2.2 
-V4: 1.5 
-V5: 2
-V3: 4.5 
-V1: 2.5 
-
-V4: 1.5 
-V0: 2.6666667 
-V5: 2.5 
-V2: 2.0 
-V1: 3.25 
-V3: 4.5 
-
-----------------------------------
-V4: 0.5 
-V2: 2.0 
-V5: 1.5 
-V0: 2.6666667 
-V1: 3.25 
-V3: 4.5 
-
-
-
-V4: 1.0 
-V5: 1.5 
-V2: 2.0 
-V0: 3.0 
-V1: 3.5 
-V3: 4.5 
-
-
-V4: 1.0 
-V5: 1.5 
-V2: 2.0 
-V0: 3.0 
-V1: 3.5 
-V3: 4.5
-
-pour la condition d'arret 
- peut trouver d'autres valeurs qui préservent l'ordre du tableau ?
-
-*/
-      //insert into an already sorted list 
-      /*if(T_plus.size()==0)  T_plus.add(T.get(i));
-      else{
-        for (int j = 0; j < T_plus.size(); j++) {
-            if (T_plus.get(j).dis < temp) continue;
-            if (T_plus.get(j).dis == temp) {T_plus.add(j+1, T.get(i));break;}
-            if (T_plus.get(j).dis > temp) {T_plus.add(j, T.get(i));break;}
-            T_plus.add(j+1, T.get(i));
-            break;
-        }
-      }*/
-      
-      
-      
-      
