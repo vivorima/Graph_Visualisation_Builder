@@ -1,109 +1,93 @@
-NodeSystem ns,ns_plus; // the graph of nodes
 int nb_node= 0;// number of nodes
-
-
-Noeud rename=null;
-int space=145;
-int offset = 40;
-int distance =60;
-int diam=30;  
-int nb=0;
-boolean input= true;
-int  pressed = 0;
-Noeud n1,n2;
+int nb_itr=0;
 
 //CREATION DES TABLEAUX
-ArrayList<ArrayList<Noeud> > generalList = new ArrayList<ArrayList<Noeud> >(10); //max 10 itérations
+Object[] generalList; 
 ArrayList<Noeud> T = new ArrayList<Noeud>();
-ArrayList<Noeud> T_plus = new ArrayList<Noeud>();
 
+
+int space=165;     //entre les itérations
+int offset = 40;  //décalage
+int distance =60;  //entre les noeuds
+int diam=30;  
+
+
+int  pressed = 0;
+boolean input= true;
+Noeud n1,n2;
+Noeud rename=null;
 
 
 void setup(){
       background(255,5);  // bg for startup
       size(800,800);
       
-       
-       T.add(new Noeud(0,0));
-        T.add(new Noeud(2,1));
-        T.add(new Noeud(4,2));
-        T.add(new Noeud(5,3));
-        T.add(new Noeud(3,4));
-        T.add(new Noeud(1,5));
+       /*
+       T.add(new Noeud(0));
+        T.add(new Noeud(2));
+        T.add(new Noeud(4));
+        T.add(new Noeud(5));
+          T.add(new Noeud(7));
+        T.add(new Noeud(3));
+        T.add(new Noeud(1));
+          T.add(new Noeud(6));
         
-        nb=T.size();
         
         T.get(0).AddVoisin(T.get(5));
         T.get(0).AddVoisin(T.get(1));
+          T.get(0).AddVoisin(T.get(6));
+          T.get(0).AddVoisin(T.get(7));
         T.get(5).AddVoisin(T.get(1));
         T.get(5).AddVoisin(T.get(4));
         T.get(1).AddVoisin(T.get(2));
         T.get(1).AddVoisin(T.get(3));
-        T.get(1).AddVoisin(T.get(3));
+
+        
+        nb_node=T.size();
+        generalList = new Object[nb_node];
+        generalList[0] = new ArrayList<Noeud>(T);
+      */
         
 }// end of setup
 
 
-
-
-
-//trouver le noeud near les coords x,y pour draw lines 
-Noeud getClosestNode(float x,float y){
-          int i = 0;
-          while(i<T.size())
-          {
-            if(x < T.get(i).x+(diam/2) && x > T.get(i).x-(diam/2) && y < T.get(i).y+(diam/2) && y > T.get(i).y-(diam/2)){
-              //found 
-              return T.get(i);
-            }
-            else i++;        
-          }
-      return null;
-}
-
-
-void update(){
-          
+void ordonner(){
   
-  nb_node=T.size();
-  //generalList.add(new ArrayList<Noeud>(T));
-  print("\n",T);
   
-       
-        int itr =0;
+        int itr=1;
+        
         //tant que T!=T'
-        while(!T.equals(T_plus)  && itr<nb_node){
+        while(itr<nb_node ){
           
-          //si c'est pas le début alors T<-T'
-          if(T_plus.size()!=0) {
-            //sauvegarde du T' dans T
-            java.util.Collections.copy(T,T_plus);
-            //si c'est le début T est le tableau initial
-          }
-          //init du T'
-          T_plus = new ArrayList<Noeud>();
+              //calcul distance
+             for(int i=0;i<nb_node;i++)
+              {
+                ((ArrayList<Noeud>)generalList[itr-1]).get(i).distance((ArrayList<Noeud>)generalList[itr-1]);
+              }
+            
+            //T' <- T 
+            generalList[itr] = new ArrayList<Noeud>();
+            for (int i = 0; i < nb_node; i++)
+                       ((ArrayList<Noeud>)generalList[itr]).add(i,new Noeud(((ArrayList<Noeud>)generalList[itr-1]).get(i)));
+                      
+            
+            //trier T' (distance)
+            java.util.Collections.sort(((ArrayList<Noeud>)generalList[itr]));
+            
+            //si T==T' je sors
+            if(((ArrayList<Noeud>)generalList[itr-1]).equals((ArrayList<Noeud>)generalList[itr])) 
+              break;
+            
+            itr++;
+            
+            //initialiser T' pour pouvoir comparer T avec T'
+            if(itr!=nb_node) generalList[itr] = new ArrayList<Noeud>();    
+         }
          
-           
-          //calculer les distance et inserer dans T'
-          for (int i = 0; i < T.size(); i++) { 
-            //update la position des noeuds dans T
-            T.get(i).updatePOS(T);
-            //calcul la distance
-            T.get(i).distance();
-            //Ajouter dans T'
-            T_plus.add(T.get(i));
-          }
-          
-          //trier T'   
-          java.util.Collections.sort(T_plus);
-          print("\n",itr,T_plus);
-           
-          //generalList.add(new ArrayList<Noeud>(T_plus));
-          itr++;
-
-      }
-      
+         nb_itr=itr;
 }
+
+
 
 
 //TO RENAME THE ELEMENTS
@@ -126,6 +110,8 @@ void keyPressed(){
   }
 }
 
+
+
 void mouseReleased() {
   
   erreur("");
@@ -141,12 +127,13 @@ void mouseReleased() {
           
            if(getClosestNode(mouseX,mouseY)==null){
              //create a node
-              Noeud n = new Noeud(nb,nb,mouseX,mouseY);
+              Noeud n = new Noeud(nb_node,mouseX,mouseY);
               T.add(n);
-              nb++;
+              nb_node++;
               //draw the node
-              fill(26, 0, 123);
-              stroke(0,0,0);
+              strokeWeight(2);
+              stroke(130, 57, 49);
+              fill(170, 93, 87);
               ellipse(mouseX, mouseY,diam, diam);
               textSize(16);
               text(n.v, mouseX-diam/2, mouseY-diam/2); 
@@ -196,7 +183,8 @@ void mouseReleased() {
             //ajouter la relation de voisinage
              n1.AddVoisin(n2);
             //dessiner le lien
-            stroke(150);
+            strokeWeight(2);
+            stroke(130, 57, 49);
             line(n1.x, n1.y, n2.x, n2.y);
             //initialiser 
             pressed = 0; 
@@ -225,76 +213,134 @@ void erreur(String msg){
 }
 
 
+
+//trouver le noeud near les coords x,y pour draw lines 
+Noeud getClosestNode(float x,float y){
+          int i = 0;
+          while(i<T.size())
+          {
+            if(x < T.get(i).x+(diam/2) && x > T.get(i).x-(diam/2) && y < T.get(i).y+(diam/2) && y > T.get(i).y-(diam/2)){
+              //found 
+              return T.get(i);
+            }
+            else i++;        
+          }
+      return null;
+}
+
+void print_graph(){
+    
+   for(int i=0;i<nb_itr;i++)
+    {
+      
+      if(((ArrayList<Noeud>)generalList[i])!=null ){
+          print("\nitération: ",i);
+        for(int k=0;k<nb_node;k++)
+            print("\n",((ArrayList<Noeud>)generalList[i]).get(k));
+      }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 void draw(){
-     
-      /*if(input){
+  
+  if(input){
         //button
-        fill(26, 0, 123);
+        strokeWeight(2);
+        stroke(130, 57, 49);
+        fill(170, 93, 87);
         rect(250,700,300,50);
         //text button
         textSize(25);
         textAlign(CENTER);
         fill(255);
         text("Meilleure Visualisation",400,735);
-      }else{ */
-        
-        update();
-        if(generalList.size()>5){
-          
-          diam=20;
-          
-          for(int itr=0;itr<generalList.size();itr++){
-            
-                T_plus= generalList.get(itr);
-                //Dessiner le graphe T
-                if(itr>4)
-                {
-                  
-                  offset = (800-(distance*(nb))); //second part
-                  ns_plus = new NodeSystem(T_plus,(itr-4)*space);
-                  textSize(18);
-                  fill(26, 0, 123);
-                  text("Itr "+itr, offset, (itr-4)*space-60); 
-                  ns_plus.display(offset,distance,diam);
-                }
-                else{
-                    
-                  distance = (700/(nb))/2;
-                  offset = (700-(distance*(nb-1))*2)/2; //first part
-                  
-                  ns_plus = new NodeSystem(T_plus,(itr+1)*space);
-                  textSize(18);
-                  fill(26, 0, 123);
-                  text("Itr "+itr, offset, (itr+1)*space-60); 
-                  ns_plus.display(offset,distance,diam);
-                }
-            
-          }
-          
-        }
-        else{
-          
-          
-        distance = (700/(nb));
-        offset = (800-distance*(nb-1))/2; //middle
-        for(int itr=0;itr<generalList.size();itr++)
-        {
-              T_plus= generalList.get(itr);
-              ns_plus = new NodeSystem(T_plus,(itr+1)*space);
-              textSize(18);
-              fill(26, 0, 123);
-              text("Itr "+itr, offset, (itr+1)*space-60); 
-              ns_plus.display(offset,distance,diam);
-        }
-        
-          
-          
-        }
-        
-        noLoop();
-          
-        
- //     }
-
-
+      }else{ 
+                 
+                noLoop();
+                nb_node=T.size();
+                generalList = new Object[nb_node];
+                generalList[0] = new ArrayList<Noeud>(T);
+                ordonner();
+                print_graph();
+                
+                //--------------------------------------DRAWING-------------------------------------------------
+                        
+                if(nb_itr>4){
+                            
+                                diam=20;
+                                
+                                for(int i=0;i<nb_itr;i++){
+                                      //Dessiner le graphe T
+                                      if(i>3)
+                                      {
+                                        //second part
+                                        distance = (700/(nb_node))/2;
+                                        offset = (800-(distance*(nb_node))); 
+                                        NodeSystem ns_plus = new NodeSystem(new ArrayList<Noeud>((ArrayList<Noeud>)generalList[i]),(i+1-4)*space);
+                                        textSize(18);
+                                          fill(170, 93, 87);
+                                        text("Itr "+i, offset, (i+1-4)*space-80); 
+                                        ns_plus.display(offset,distance,diam);
+                                      }
+                                      else{
+                                        //first part
+                                        distance = (700/(nb_node))/2;
+                                        offset = (800-(distance*(nb_node))*2)/2; ;
+                                        
+                                        NodeSystem ns_plus = new NodeSystem(new ArrayList<Noeud>((ArrayList<Noeud>)generalList[i]),(i+1)*space);
+                                        textSize(18);
+                                          fill(170, 93, 87);
+                                        text("Itr "+i, offset, (i+1)*space-80); 
+                                        ns_plus.display(offset,distance,diam);
+                                      }
+                                  
+                                }
+                            
+                          }
+                          else{
+                            
+                            
+                                    distance = (700/(nb_node));
+                                    offset = (800-distance*(nb_node-1))/2; //middle
+                                    for(int i=0;i<nb_itr;i++)
+                                      {
+                                                                             
+                                         NodeSystem ns_plus = new NodeSystem(new ArrayList<Noeud>((ArrayList<Noeud>)generalList[i]),(i+1)*space);
+                                          textSize(18);
+                                          fill(170, 93, 87);
+                                          text("Itr "+i, offset, (i+1)*space-60); 
+                                          ns_plus.display(offset,distance,diam);
+                                      }
+                           
+                         }
+     }
 }

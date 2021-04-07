@@ -5,19 +5,25 @@ class Noeud implements Comparable
     float dis;
     ArrayList<Noeud> voisins;
     float x,y;
-    int pos; // the node position in the graph
     
-    public Noeud(int v,int pos)
+    public Noeud(Noeud n)
+    {
+      this.v = n.v;
+      this.voisins = new ArrayList(n.voisins);
+      this.x=n.x;
+      this.y=n.y;
+      this.dis=n.dis;
+    }
+    
+    public Noeud(int v)
     {
       this.v = v;
-      this.pos = pos;
       this.voisins = new ArrayList();
     }
     
-    public Noeud(int v,int pos,float x,float y)
+    public Noeud(int v,float x,float y)
     {
       this.v = v;
-      this.pos = pos;
       this.x = x;
       this.y = y;
       this.voisins = new ArrayList();
@@ -33,31 +39,29 @@ class Noeud implements Comparable
     }
     
     // draw the node
-      void show(int offset,int distance,int y,int diam){ 
-        fill(26, 0, 123);
-        stroke(0,0,0);
+      void show(int offset,int distance,int y,int diam, int pos){ 
+        strokeWeight(2);
+        stroke(130, 57, 49);
+        fill(170, 93, 87);
         ellipse(offset+pos*distance, y,diam, diam);
-        textSize(16);
-        fill(26, 0, 123);
-        text("v"+v, offset+pos*distance, y+1.5*diam); 
-      }
+        textSize(0.65*diam);
+        textAlign(CENTER);
+        text("v"+v, offset+pos*distance, y+1.2*diam); 
+        text(String.format("%.1f", this.dis), offset+pos*distance, y+1.9*diam);   
+    }
     
-    
-    void updatePOS(ArrayList<Noeud> Tab) {
-        this.pos=Tab.indexOf(this);
-      }
     
     @Override
     public String toString(){
       String s = "V"+str(v);
       
-     /* if(this.voisins!=null){
+      if(this.voisins!=null){
         s = s+": [";
         for (int i = 0; i <  this.voisins.size(); i++) {
           s = s + " V"+ str(this.voisins.get(i).v)+",";
         }
         s = s+"]-----" + str(dis);
-      }else s = s+": aucun voisin.";*/
+      }else s = s+": aucun voisin.";
       return s;
 }
   
@@ -72,18 +76,18 @@ class Noeud implements Comparable
         }
 
         final Noeud other = (Noeud) obj;
-        if (this.v!=other.v) {
+        if (this.x!=other.x || this.y!=other.y || this.v!=other.v) {
             return false;
         }
 
         return true;
     }
     
-    public float distance(){
-      float d = (float)this.pos;
+    public float distance(ArrayList<Noeud> nodes){
+      float d = (float)nodes.indexOf(this);
       
       for(int i=0; i<this.voisins.size();i++){
-          d = d+ (float) this.voisins.get(i).pos;
+          d = d+(float) nodes.indexOf(this.voisins.get(i));
       }
       
       this.dis= d/(this.voisins.size()+1);

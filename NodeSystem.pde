@@ -17,15 +17,15 @@ int nb_connections;
 void DrawConnections(Noeud n,int offset,int distance,int y,int diam){
       
       int num = n.getVoisins().size(); // number of connections
-      int  v1 = n.pos; // position of the node
+      int  v1 = nodes.indexOf(n); // position of the node
       
       for(int i = 0; i < num; i ++){
-          int  v2 =  n.getVoisins().get(i).pos; // every other voisin
+          int  v2 =  nodes.indexOf(n.getVoisins().get(i)); // every other voisin
           
           //just a verification in case of error and we add the same node as voisin
           if((java. lang. Math. abs(v1-v2) >= 1)){
-           
-            stroke(0,random(100, 255), random(100, 255), random(100, 255));
+           strokeWeight(2);
+            stroke(0,random(100, 255), random(100, 255),150);
             noFill();
             arc(offset+distance*(v1+v2)/2,y,distance*(java. lang. Math. abs(v1-v2)), diam+(java. lang. Math. abs(v1-v2))*28,-PI,0, OPEN);
             
@@ -47,7 +47,7 @@ void display(int offset,int distance,int diam){
    
    for(int i = 0; i < nodes.size(); i++){
         n = nodes.get(i);
-        n.show(offset,distance,y,diam);// display
+        n.show(offset,distance,y,diam,i);// display
    }
     
     
