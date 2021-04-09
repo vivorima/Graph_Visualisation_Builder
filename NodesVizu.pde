@@ -1,17 +1,16 @@
-int nb_node= 0;// number of nodes
-int nb_itr=0;
+int nb_node= 0;    // number of nodes
+int nb_itr=0;     //number of iterations 
 
 //CREATION DES TABLEAUX
-Object[] generalList; 
-ArrayList<Noeud> T = new ArrayList<Noeud>();
+Object[] generalList; //contenir les tabs intermédiares
+ArrayList<Noeud> T = new ArrayList<Noeud>(); //tableau initial
 
 
+//POUR L'interface
 int space=165;     //entre les itérations
 int offset = 40;  //décalage
 int distance =60;  //entre les noeuds
-int diam=30;  
-
-
+int diam=30;  //noeud
 int  pressed = 0;
 boolean input= true;
 Noeud n1,n2;
@@ -22,21 +21,22 @@ void setup(){
       background(255,5);  // bg for startup
       size(800,800);
       
-       /*
+      //EXEMPLE
+    /*   
        T.add(new Noeud(0));
         T.add(new Noeud(2));
         T.add(new Noeud(4));
         T.add(new Noeud(5));
-          T.add(new Noeud(7));
+          //T.add(new Noeud(7));
         T.add(new Noeud(3));
         T.add(new Noeud(1));
-          T.add(new Noeud(6));
+          //T.add(new Noeud(6));
         
         
         T.get(0).AddVoisin(T.get(5));
         T.get(0).AddVoisin(T.get(1));
-          T.get(0).AddVoisin(T.get(6));
-          T.get(0).AddVoisin(T.get(7));
+          //T.get(0).AddVoisin(T.get(6));
+          //T.get(0).AddVoisin(T.get(7));
         T.get(5).AddVoisin(T.get(1));
         T.get(5).AddVoisin(T.get(4));
         T.get(1).AddVoisin(T.get(2));
@@ -46,32 +46,32 @@ void setup(){
         nb_node=T.size();
         generalList = new Object[nb_node];
         generalList[0] = new ArrayList<Noeud>(T);
-      */
+     */ 
         
 }// end of setup
 
 
+//ALGORITHME DE TRI
 void ordonner(){
-  
   
         int itr=1;
         
         //tant que T!=T'
-        while(itr<nb_node ){
+        while(itr<nb_node){
           
-              //calcul distance
+              //calcul des distances dans T
              for(int i=0;i<nb_node;i++)
               {
                 ((ArrayList<Noeud>)generalList[itr-1]).get(i).distance((ArrayList<Noeud>)generalList[itr-1]);
               }
             
-            //T' <- T 
+            //T' <- T
             generalList[itr] = new ArrayList<Noeud>();
             for (int i = 0; i < nb_node; i++)
                        ((ArrayList<Noeud>)generalList[itr]).add(i,new Noeud(((ArrayList<Noeud>)generalList[itr-1]).get(i)));
                       
             
-            //trier T' (distance)
+            //trier T' (en se basant sur la distance)
             java.util.Collections.sort(((ArrayList<Noeud>)generalList[itr]));
             
             //si T==T' je sors
@@ -80,29 +80,27 @@ void ordonner(){
             
             itr++;
             
-            //initialiser T' pour pouvoir comparer T avec T'
+            //initialiser T de l'itr suivante pour pouvoir comparer T avec T'
             if(itr!=nb_node) generalList[itr] = new ArrayList<Noeud>();    
          }
-         
          nb_itr=itr;
 }
 
 
 
 
-//TO RENAME THE ELEMENTS
+//TO RENAME THE NODES
 void keyPressed(){
   if(input && rename!=null){
 
       
     if (key == '0' ||key == '1' || key == '2' || key == '3' ||key == '4' ||key == '5' || key == '6' || key == '7' || key == '8' || key == '9')
     {
-      
+        
         rename.v=key-48;
         textSize(16);
         fill(0, 204, 106);
         text("v"+rename.v, rename.x+diam/2, rename.y-diam/2); 
-        
         rename = null;
         erreur("");
     }
@@ -113,7 +111,7 @@ void keyPressed(){
 
 
 void mouseReleased() {
-  
+  //initialiser affichage 
   erreur("");
   
    //CLICK BUTTON 
@@ -245,33 +243,9 @@ void print_graph(){
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 void draw(){
   
+  //pour créer le graphe
   if(input){
         //button
         strokeWeight(2);
@@ -285,16 +259,17 @@ void draw(){
         text("Meilleure Visualisation",400,735);
       }else{ 
                  
-                noLoop();
+                noLoop(); //stop the loop
+                //INITIALISATIONS
                 nb_node=T.size();
                 generalList = new Object[nb_node];
                 generalList[0] = new ArrayList<Noeud>(T);
+                //trier
                 ordonner();
-                print_graph();
                 
                 //--------------------------------------DRAWING-------------------------------------------------
                         
-                if(nb_itr>4){
+                if(nb_itr>4){ //pour diviser l'affichage en deux 
                             
                                 diam=20;
                                 
